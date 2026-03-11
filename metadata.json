@@ -1,0 +1,8 @@
+{
+  "name": "OmeChat",
+  "description": "A real-time random video chat application using WebRTC and Socket.io.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
