@@ -163,10 +163,12 @@ export default function App() {
     }
   };
 
+  const [showChat, setShowChat] = useState(false);
+
   return (
-    <div className="flex flex-col h-screen bg-white text-zinc-900 font-sans">
+    <div className="flex flex-col h-screen bg-white text-zinc-900 font-sans overflow-hidden">
       {/* Header */}
-      <header className="h-14 border-b border-zinc-200 flex items-center justify-between px-4 bg-white z-10">
+      <header className="h-14 border-b border-zinc-200 flex items-center justify-between px-4 bg-white z-10 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[#0055ff] rounded flex items-center justify-center">
             <Video className="text-white" size={18} />
@@ -188,9 +190,9 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-hidden relative">
         {/* Left Column: Videos */}
-        <div className="w-1/2 flex flex-col border-r border-zinc-200 bg-zinc-50">
+        <div className={`flex flex-col border-r border-zinc-200 bg-zinc-50 transition-all duration-300 ease-in-out ${showChat ? 'w-1/2' : 'w-full'}`}>
           {/* Partner Video (Top) */}
           <div className="flex-1 relative p-2">
             <VideoPlayer stream={remoteStream} label="Stranger" />
@@ -231,8 +233,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Bottom Control: Next Button */}
-          <div className="p-4 bg-white border-t border-zinc-200 flex justify-center">
+          {/* Bottom Control: Next Button & Chat Toggle */}
+          <div className="p-4 bg-white border-t border-zinc-200 flex items-center justify-center gap-4">
             <button
               onClick={handleFindPartner}
               disabled={isSearching}
@@ -255,17 +257,35 @@ export default function App() {
                 </>
               )}
             </button>
+
+            <button
+              onClick={() => setShowChat(!showChat)}
+              className={`p-4 rounded-full transition-all border ${showChat ? 'bg-[#0055ff] text-white border-blue-600' : 'bg-white text-zinc-600 border-zinc-200 hover:bg-zinc-50'}`}
+              title="Toggle Chat"
+            >
+              <MessageSquare size={24} />
+            </button>
           </div>
         </div>
 
-        {/* Right Column: Chat */}
-        <div className="w-1/2 flex flex-col">
-          <ChatBox 
-            messages={messages} 
-            onSendMessage={sendMessage} 
-            disabled={!isConnected} 
-          />
-        </div>
+        {/* Right Column: Chat (Animated) */}
+        <AnimatePresence>
+          {showChat && (
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-1/2 flex flex-col h-full bg-white z-20"
+            >
+              <ChatBox 
+                messages={messages} 
+                onSendMessage={sendMessage} 
+                disabled={!isConnected} 
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
